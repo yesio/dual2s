@@ -57,7 +57,7 @@ HCSR04 us_L(PIN_USC_LEFT_ECHO, PIN_USC_LEFT_TRIG);
 
 void setup(){
   Serial.begin(115200);
-  SerialBT.begin("GSmetal");  //啟動藍牙串列並設定藍牙裝置名稱
+  SerialBT.begin("你的指定車名");  //啟動藍牙串列並設定藍牙裝置名稱
   bz.alarm();
 }
 
