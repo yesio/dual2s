@@ -21,7 +21,7 @@
 ---
 
 ## 🛠️ 核心功能教學
-### 全彩LED (ws2812b)
+### [全彩LED (ws2812b)](https://yesio.net/srl/dual2s-v2_2025/)。
 ### 蜂鳴器 (Buzzer)
 ### 電壓監測 (Power)
 ### 超音波 (HCSR04)
