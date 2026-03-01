@@ -10,7 +10,7 @@
 ## 🚀 快速開始
 ### 1. 硬體需求
 * **核心板**: ESP32 (建議使用 Node32s 腳位定義)
-* **驅動板**: dual2s/mini多功能運動控制器，詳細資訊請參考[前往 yesio 官網](https://yesio.net/srl/dual2s-v2_2025/)。
+* **驅動板**: dual2s多功能運動控制器，詳細資訊[dual2s/mini多功能運動](https://yesio.net/srl/dual2s-v2_2025/)。
 * **電源**: 2S 鋰電池 (7.4V - 8.4V)
 
 ### 2. 安裝方式
