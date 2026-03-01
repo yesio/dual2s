@@ -9,7 +9,7 @@
 
 ## ✨ 最佳編譯環境
 * ESP32 Arduino Core v3.3.5
-* Ps3Controller(fork from jvpernis)需修改ps3.c，請使用已完成修改版(https://github.com/yesio/esp32-ps3)
+* Ps3Controller(fork from jvpernis)需修改ps3.c，請使用此[已完成修改版](https://github.com/yesio/esp32-ps3)
 ---
 
 ## 🚀 快速開始
