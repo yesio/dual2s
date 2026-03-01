@@ -22,10 +22,10 @@
 
 ## 🛠️ dual2s 核心功能教學
 #### [全彩LED (ws2812b)](https://yesio.net/srl/dual2s-v2_2025/)
-### [蜂鳴器 (Buzzer)](https://yesio.net/srl/dual2s-buzzer/)
-### [電壓監測 (Power)](https://yesio.net/srl/dual22-2s-powerdetect/)
-### [超音波 (HCSR04)](https://yesio.net/srl/dual22-2s-hcsr04/)
-### [三通道循線 (IR3CH)](https://yesio.net/srl/dual22-2s-ir3ch/)
-### [MG995/SG90s伺服馬達 (ServoMotor)](https://yesio.net/srl/p3x-mg995-ctl/)
-### [DC電機控制 (Motor)](https://yesio.net/srl/dual22-2s-dcmotor/)
-### [GoSUMO車體 (GoSUMO)](https://yesio.net/srl/dual22-2s-dcmotor/)
+#### [蜂鳴器 (Buzzer)](https://yesio.net/srl/dual2s-buzzer/)
+#### [電壓監測 (Power)](https://yesio.net/srl/dual22-2s-powerdetect/)
+#### [超音波 (HCSR04)](https://yesio.net/srl/dual22-2s-hcsr04/)
+#### [三通道循線 (IR3CH)](https://yesio.net/srl/dual22-2s-ir3ch/)
+#### [MG995/SG90s伺服馬達 (ServoMotor)](https://yesio.net/srl/p3x-mg995-ctl/)
+#### [DC電機控制 (Motor)](https://yesio.net/srl/dual22-2s-dcmotor/)
+#### [GoSUMO車體 (GoSUMO)](https://yesio.net/srl/dual22-2s-dcmotor/)
