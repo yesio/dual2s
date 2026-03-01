@@ -22,6 +22,7 @@ namespace DUAL2S_HW {
 
   // 蜂鳴器
   constexpr uint8_t BUZZER = 15;
+  // ws2812b全彩
   constexpr uint8_t WSLED = 2;
 
   // 超音波 (Echo, Trig)
