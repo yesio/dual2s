@@ -14,7 +14,7 @@ ESP32 Arduino Core v3.3.5
 
 ## 🚀 快速開始
 ### 1. 硬體需求
-* **核心板**: ESP32 (建議使用 Node32s 腳位定義)
+* **核心板**: ESP32
 * **驅動板**: dual2s多功能運動控制器，詳細資訊：[dual2s/mini多功能運動控制器](https://yesio.net/srl/dual2s-v2_2025/)。
 * **電源**: 2S 鋰電池 (7.4V - 8.4V)
 
