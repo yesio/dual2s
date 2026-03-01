@@ -1,5 +1,5 @@
 # dual2s Library for GoSUMO相撲機器人 | esp32
-這是一個支援esp32 / dual2s控制器 / GoSUMO相撲擂台 / AIoT微專題的多工多用途函數庫，提供了：
+這是一個在Arduino IDE環境下支援esp32 / dual2s控制器 / GoSUMO相撲擂台 / AIoT微專題的多工多用途函數庫，提供了：
 * **指示元件**: ws2812b全彩LED、蜂鳴器Buzzer
 * **環境感測**: 三路超音波、三通道循線(近紅外線)、供電電壓偵測
 * **制動元件**: MG995/SG90s伺服馬達、四路獨立正反轉可調速直流電機控制
