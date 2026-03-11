@@ -68,8 +68,8 @@ void notify() {
 
   if(stick_y <= -10 && abs(stick_x) < 10) gs.act(GoSUMO::FORWARD, map(stick_y, -10, -128, 150, topSpeed));
   else if(stick_y >= 10 && abs(stick_x) < 10) gs.act(GoSUMO::BACKWARD, map(stick_y, 10, 127, 150, topSpeed));
-  else if(stick_x >= 10 && abs(stick_y) < 10) gs.act(GoSUMO::GO_RIGHT, map(stick_x, 10, 127, 150, topSpeed));
-  else if(stick_x <= -10 && abs(stick_y) < 10) gs.act(GoSUMO::GO_LEFT, map(stick_x, -10, -128, 150, topSpeed));
+  else if(stick_x >= 10 && abs(stick_y) < 10) gs.act(GoSUMO::TURN_RIGHT, map(stick_x, 10, 127, 150, topSpeed));
+  else if(stick_x <= -10 && abs(stick_y) < 10) gs.act(GoSUMO::TURN_LEFT, map(stick_x, -10, -128, 150, topSpeed));
   else gs.stop();
 
 }

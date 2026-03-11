@@ -220,8 +220,21 @@ class GoSUMO {
 
   public:
     typedef enum {
-      FORWARD, BACKWARD, GO_LEFT, GO_RIGHT,
-      R_TVL, L_TVL, RF_TVL, RB_TVL, LF_TVL, LB_TVL
+	    // 基礎運動 (Basic Movement)
+		FORWARD,     // 前進
+		BACKWARD,    // 後退
+		TURN_LEFT,   // 原地左轉 (原 GO_LEFT)
+		TURN_RIGHT,  // 原地右轉 (原 GO_RIGHT)
+
+		// 橫移運動 (Strafing - 麥克納姆輪特性)
+		STRAFE_LEFT,  // 左橫移 (原 L_TVL)
+		STRAFE_RIGHT, // 右橫移 (原 R_TVL)
+
+		// 斜向運動 (Diagonal)
+		DIAG_FL,     // 前左斜向 (Forward-Left, 原 LF_TVL)
+		DIAG_FR,     // 前右斜向 (Forward-Right, 原 RF_TVL)
+		DIAG_BL,     // 後左斜向 (Backward-Left, 原 LB_TVL)
+		DIAG_BR      // 後右斜向 (Backward-Right, 原 RB_TVL)
     } Motion;
 
     // 建構子：要求傳入四顆馬達的記憶體位址

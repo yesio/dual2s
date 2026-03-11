@@ -311,35 +311,35 @@ void GoSUMO::act(Motion motion, uint16_t speed) {
       _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
       _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
       break;
-    case GO_LEFT:
+    case TURN_LEFT:
       _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
       _m2->act(Motor::CW, speed);  _m4->act(Motor::CW, speed);
       break;
-    case GO_RIGHT:
+    case TURN_RIGHT:
       _m1->act(Motor::CCW, speed); _m3->act(Motor::CCW, speed);
       _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
       break;
-    case R_TVL: // 右橫移
+    case STRAFE_RIGHT: // 右橫移
       _m1->act(Motor::CW, speed);  _m3->act(Motor::CCW, speed);
       _m2->act(Motor::CW, speed);  _m4->act(Motor::CCW, speed);
       break;
-    case L_TVL: // 左橫移
+    case STRAFE_LEFT: // 左橫移
       _m1->act(Motor::CCW, speed); _m3->act(Motor::CW, speed);
       _m2->act(Motor::CCW, speed); _m4->act(Motor::CW, speed);
       break;  
-    case RF_TVL: // 右前
+    case DIAG_FR:  // 前右斜向 (Forward-Right, 原 RF_TVL)
       _m1->stop();                 _m3->act(Motor::CCW, speed);
       _m2->act(Motor::CW, speed);  _m4->stop();
       break;
-    case RB_TVL: // 右後
+    case DIAG_BR:  // 後右斜向 (Backward-Right, 原 RB_TVL)
       _m1->act(Motor::CW, speed);  _m3->stop();
       _m2->stop();                 _m4->act(Motor::CCW, speed);
       break;
-    case LF_TVL: // 左前
+    case DIAG_FL:  // 前左斜向 (Forward-Left, 原 LF_TVL)
       _m1->act(Motor::CCW, speed); _m3->stop();
       _m2->stop();                 _m4->act(Motor::CW, speed);
       break;
-    case LB_TVL: // 左後
+    case DIAG_BL:  // 後左斜向 (Backward-Left, 原 LB_TVL)
       _m1->stop();                 _m3->act(Motor::CW, speed);
       _m2->act(Motor::CCW, speed); _m4->stop();
       break;
@@ -362,11 +362,11 @@ void GoSUMO::linetracking(Motion motion, uint16_t speed, uint16_t wheel_differen
     _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
     _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
   }
-  else if (motion == GO_LEFT) {
+  else if (motion == TURN_LEFT) {
     _m1->act(Motor::CCW, speed - wheel_difference); _m3->act(Motor::CCW, speed - wheel_difference);
     _m2->act(Motor::CW, speed);                     _m4->act(Motor::CW, speed);
   }
-  else if (motion == GO_RIGHT) {
+  else if (motion == TURN_RIGHT) {
     _m1->act(Motor::CCW, speed);                    _m3->act(Motor::CCW, speed);
     _m2->act(Motor::CW, speed - wheel_difference);  _m4->act(Motor::CW, speed - wheel_difference);
   }
