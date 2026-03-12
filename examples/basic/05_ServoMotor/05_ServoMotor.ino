@@ -1,9 +1,9 @@
 /*=====================================================================================
-yesio.net / 2026.03.01 / by nick
-# Filename：ServoMotor.ino
+yesio.net / 2026.03.12 / by nick
+# Filename：05_ServoMotor.ino
 # Function：伺服馬達(MG995/SG90s)之使用範例, 
   Examples of dual2S's application in Servo Motor(MG995/SG90s).
-# Toolchain & Libs：ESP-IDF-v3.3.7, dual2s-v2.0.1
+# Toolchain & Libs：ESP32 Arduino Core v3.3.5 (ESP-IDF v5.1), dual2s
 ======================================================================================*/
 #include "dual2s.h"
 

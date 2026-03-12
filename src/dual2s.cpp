@@ -17,6 +17,9 @@ void Buzzer::tone(uint16_t frequency, uint8_t volume) {
     noTone(); // 頻率為 0 視為休止符
     return;
   }
+  // 【關鍵修正】先將腳位卸載，才能強制 ESP32 v3 核心更新頻率
+  ledcDetach(_pin);
+  
   ledcAttach(_pin, frequency, 8); 
   ledcWrite(_pin, volume); 
 }
@@ -35,8 +38,18 @@ void Buzzer::update() {
   // 如果沒有在播放音樂，直接跳出，完全不佔用資源
   if (!_isPlaying) return;
 
-  // 檢查當前音符是否播放完畢
-  if (millis() - _lastNoteTime >= _currentMelody[_noteIndex].duration) {
+  unsigned long elapsedTime = millis() - _lastNoteTime;
+  uint16_t currentDuration = _currentMelody[_noteIndex].duration;
+
+  // 【新增：自動斷音機制】
+  // 在每個音符結束前 20 毫秒，提前將音量設為 0 (靜音)
+  // 這能切開兩個連續相同的音符，產生清晰的節奏感
+  if (currentDuration > 20 && elapsedTime >= currentDuration - 20) {
+    ledcWrite(_pin, 0); 
+  }
+
+  // 檢查當前音符的總時間是否結束
+  if (elapsedTime >= currentDuration) {
     _noteIndex++; // 準備播放下一個音
 
     // 判斷是否播完整首旋律
@@ -48,7 +61,8 @@ void Buzzer::update() {
       tone(_currentMelody[_noteIndex].freq);
       _lastNoteTime = millis();
     }
-  }
+  } 
+
 }
 
 void Buzzer::playMelody(const Note* melody, uint16_t length) {
@@ -66,7 +80,7 @@ void Buzzer::playMelody(const Note* melody, uint16_t length) {
 void Buzzer::soundBoot() {
   // 開機：快速上升琶音 (瑪利歐吃蘑菇的感覺)
   static const Note melody[] = {
-    {Pitch::Mi_5, 80}, {0, 50}, {Pitch::Sol_5, 120}
+    {Pitch::Do_4, 100}, {Pitch::Mi_4, 100}, {Pitch::Sol_4, 100}, {Pitch::Do_5, 200}
   };
   playMelody(melody, 4);
 }
@@ -87,69 +101,117 @@ void Buzzer::soundError() {
   playMelody(melody, 3);
 }
 
-void Buzzer::soundAttack() {
+void Buzzer::soundNotify() {
   // 攻擊：急促的高頻警告音
   static const Note melody[] = {
-    {1000, 50}, {0, 50}, {1000, 50}, {0, 50}, {1000, 50} // 這裡利用 1kHz 發揮硬體最大音量
+    {1000, 50}, {0, 50}, {1000, 50}, {0, 50}, {1000, 50} 
   };
   playMelody(melody, 5);
 }
 
+void Buzzer::soundAttack() {
+  // 攻擊：急促的高頻警告音
+  static const Note melody[] = {
+    // 登、登、登
+    {Pitch::Sol_4, 300}, {Pitch::Sol_4, 300}, {Pitch::Sol_4, 300}, 
+    // (登~登)、登—— (準備撞擊！)
+    {311, 200}, {466, 100}, {Pitch::Sol_4, 600}
+  };
+  playMelody(melody, 9);
+}
+
 /*--------------------------------------------------------*/
-// WS2812B (全彩狀態指示燈) 
+// stateLED (WS2812B全彩狀態指示燈) 
 /*--------------------------------------------------------*/
 // 初始化列表：設定 Adafruit_NeoPixel 物件 (預設為 GRB 格式與 800KHz)
-WS2812B::WS2812B(uint8_t pin, uint16_t num_leds) 
+stateLED::stateLED(uint8_t pin, uint16_t num_leds) 
   : _pin(pin), _num_leds(num_leds), _strip(num_leds, pin, NEO_GRB + NEO_KHZ800) {
 }
 
-void WS2812B::begin() {
+void stateLED::begin() {
   _strip.begin();
   _strip.show(); // 關閉所有 LED
   _strip.setBrightness(100); // 預設亮度 (0~255)，避免太刺眼或燒板子
 }
 
-void WS2812B::setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
+void stateLED::setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
   _strip.setPixelColor(index, _strip.Color(r, g, b));
   _strip.show();
 }
 
-void WS2812B::fill(uint8_t r, uint8_t g, uint8_t b) {
+void stateLED::fill(uint8_t r, uint8_t g, uint8_t b) {
   _strip.fill(_strip.Color(r, g, b), 0, _num_leds);
   _strip.show();
 }
 
-void WS2812B::clear() {
+void stateLED::clear() {
   _strip.clear();
   _strip.show();
 }
 
-void WS2812B::setBrightness(uint8_t brightness) {
+void stateLED::setBrightness(uint8_t brightness) {
   _strip.setBrightness(brightness);
   _strip.show();
 }
 
-// 根據傳入的狀態，一鍵設定所有 LED 顏色
-void WS2812B::setStatus(Status state) {
-  switch (state) {
-    case IDLE:
-      fill(20, 20, 20);   // 微弱白光
+// 根據 Enum 一鍵設定燈光顏色
+void stateLED::fillColor(Color color) {
+  switch (color) {
+    case OFF:    
+      fill(0, 0, 0); 
       break;
-    case CONNECTED:
-      fill(0, 0, 255);    // 藍光
+    case RED:    
+      fill(255, 0, 0); 
       break;
-    case SEARCHING:
-      fill(255, 150, 0);  // 橘黃光
+    case GREEN:  
+      fill(0, 255, 0); 
       break;
-    case ATTACK:
-      fill(255, 0, 0);    // 紅光
+    case BLUE:   
+      fill(0, 0, 255); 
       break;
-    case ERROR:
-      fill(128, 0, 128);  // 紫光
+    case YELLOW: 
+      fill(255, 150, 0); // 橘黃色視覺效果最好
       break;
-	case LOWPWR:
-      fill(255, 255, 0);  // 橘光
-      break;  
+    case PURPLE: 
+      fill(128, 0, 128); 
+      break;
+    case CYAN:   
+      fill(0, 255, 255); 
+      break;
+    case WHITE:  
+      fill(200, 200, 200); // 降低亮度，避免太刺眼
+      break;
+  }
+}
+
+// 根據 Enum 設定單顆LED 顏色
+void stateLED::setColor(uint16_t index, Color color) {
+  if (index >= _num_leds) return;   // 防呆：如果 index 超出 LED 總數，直接跳出避免記憶體錯誤
+  switch (color) {
+    case OFF:    
+      setPixel(index, 0, 0, 0); 
+      break;
+    case RED:    
+      setPixel(index, 255, 0, 0); 
+      break;
+    case GREEN:  
+      setPixel(index, 0, 255, 0); 
+      break;
+    case BLUE:   
+      setPixel(index, 0, 0, 255); 
+      break;
+    case YELLOW: 
+      setPixel(index, 255, 150, 0); 
+      break;
+    case PURPLE: 
+      setPixel(index, 128, 0, 128); 
+      break;
+    case CYAN:   
+      setPixel(index, 0, 255, 255); 
+      break;
+    case WHITE:  
+      setPixel(index, 100, 100, 100); 
+      break;
   }
 }
 
@@ -210,6 +272,7 @@ IR3CH::IR3CH(uint8_t pin_L, uint8_t pin_M, uint8_t pin_R)
   pinMode(_pin_R, INPUT);
 }
 
+
 void IR3CH::update(uint16_t TH, LineType lineType, bool DEBUG) {
   unsigned long currentMillis = millis();
 
@@ -246,39 +309,6 @@ void IR3CH::update(uint16_t TH, LineType lineType, bool DEBUG) {
       Serial.print(" => State: "); Serial.println(_currentState, BIN);
     }
   }
-}
-
-//讀取3通道數值並轉換為byte數值
-//B000,由高至低位元 L, M, R
-byte IR3CH::read3CH(uint16_t TH, LineType lineType, bool DEBUG) {
-    byte tempState = 0;
-    uint16_t valR = analogRead(_pin_R);
-    uint16_t valM = analogRead(_pin_M);
-    uint16_t valL = analogRead(_pin_L);
-
-
-    // 【修改】依據場地類型，切換判斷邏輯
-	//由高至低位元 L, M, R
-    if (lineType == BLACK_LINE) {
-      if(valR > TH) tempState |= B001;
-      if(valM > TH) tempState |= B010;
-      if(valL > TH) tempState |= B100;
-    } 
-    else if (lineType == WHITE_LINE) {
-      if(valR < TH) tempState |= B001;
-      if(valM < TH) tempState |= B010;
-      if(valL < TH) tempState |= B100;
-    }
-    
-    if (DEBUG) {
-      Serial.print("IR_L: "); Serial.print(valL);
-      Serial.print(" | IR_M: "); Serial.print(valM);
-      Serial.print(" | IR_R: "); Serial.print(valR);
-      Serial.print(" => State: "); Serial.println(tempState, BIN);
-	  delay(100);
-    }
-
-	return tempState;
 }
 
 byte IR3CH::getState() {

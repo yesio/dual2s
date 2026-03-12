@@ -88,31 +88,34 @@ class Buzzer {
     void soundBoot();      // 開機音效
     void soundConnect();   // 連線成功
     void soundError();     // 錯誤警告
+	 void soundNotify();     // 錯誤警告
     void soundAttack();    // 攻擊/投石警報
 };
 
 /*--------------------------------------------------------*/
-// WS2812B (全彩狀態指示燈) 
+// stateLED (WS2812B全彩狀態指示燈) 
 /*--------------------------------------------------------*/
-class WS2812B {
+class stateLED {
   private:
     uint8_t _pin;
     uint16_t _num_leds;
     Adafruit_NeoPixel _strip; // 組合 (Composition)：把 Adafruit 物件包在裡面
 
   public:
-    // 定義機器人的預設燈光狀態
+	// 定義狀態燈顏色
     typedef enum {
-      IDLE,       // 待機 (呼吸燈或微弱白光)
-      CONNECTED,  // 藍牙已連線 (藍燈)
-      SEARCHING,  // 循跡/搜尋敵人中 (黃燈)
-      ATTACK,     // 發現敵人/投石攻擊 (紅燈閃爍或常亮)
-      ERROR,       // 異常狀態 (紫燈)
-	  LOWPWR
-    } Status;
+      OFF,       // 關閉 (黑)
+      RED,       // 紅光 (常代表：攻擊、錯誤、低電量)
+      GREEN,     // 綠光 (常代表：安全、待機、就緒)
+      BLUE,      // 藍光 (常代表：藍牙已連接、運行中)
+      YELLOW,    // 黃光 (常代表：警告、搜尋敵人、壓線邊緣)
+      PURPLE,    // 紫光 (常代表：特殊模式、異常)
+      CYAN,      // 青光/水藍光 (常代表：另一種自訂狀態)
+      WHITE      // 白光 (常代表：照明、系統啟動)
+    } Color;
 
     // 建構子：傳入腳位與 LED 數量
-    WS2812B(uint8_t pin, uint16_t num_leds);
+    stateLED(uint8_t pin, uint16_t num_leds);
     
     // 初始化函式 (要在主程式 setup 中呼叫)
     void begin();
@@ -124,7 +127,8 @@ class WS2812B {
     void setBrightness(uint8_t brightness);
     
     // 進階控制：一鍵切換機器人狀態燈效
-    void setStatus(Status state);
+    void fillColor(Color color);
+	void setColor(uint16_t index, Color color);
 };
 
 /*--------------------------------------------------------*/
