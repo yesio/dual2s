@@ -21,9 +21,9 @@ ESP32 Arduino Core v3.3.5
 ### 2. 安裝方式
 第一次玩ESP32的朋友，請直接參考【完整安裝教學】。
 #### 簡要說明 - 如圖：
-1.開啟ArduinoIDE編輯器，實作版本Arduino IDE v2.3.6。
-2.點選左側【函數庫管理】，在搜尋窗中輸入【yesio】或【dual2s】。
-3.安裝最新版dual2s函數。 
+##### 1.開啟ArduinoIDE編輯器，實作版本Arduino IDE v2.3.6。
+##### 2.點選左側【函數庫管理】，在搜尋窗中輸入【yesio】或【dual2s】。
+##### 3.安裝最新版dual2s函數。 
 
 #### [完整安裝教學](https://yesio.net/srl/dual22-ide/)
 
