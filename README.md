@@ -21,7 +21,7 @@ ESP32 Arduino Core v3.3.5
 ### 2. 安裝方式
 第一次玩ESP32的朋友，請直接參考【完整安裝教學】
 ####簡要說明 - 如圖：
-1.開啟ArduinoIDE編輯器，實作版本ArduinoIDE v2.3.6以上。
+1.開啟ArduinoIDE編輯器，實作版本Arduino IDE v2.3.6。
 2.點選左側【函數庫管理】，在搜尋窗中輸入【yesio】或【dual2s】。
 3.安裝最新版dual2s函數。 
 #### [完整安裝教學](https://yesio.net/srl/dual22-ide/)
@@ -32,10 +32,10 @@ ESP32 Arduino Core v3.3.5
 #### [【顯示】狀態燈使用 | ws2812b](https://yesio.net/srl/dual2sbasic-ws2812b/)
 #### [【聲音】蜂鳴器 | buzzer](https://yesio.net/srl/dual2sbasic-buzzer/)
 #### [【感測】超音波 | HCSR04](https://yesio.net/srl/dual2sbasic-hcsr04/)
-#### [三通道循線 |IR3CH-line](https://yesio.net/srl/dual2sbasic-ir3ch-linefollowing/)
-#### [三通道循線 | IR3CH-相撲](https://yesio.net/srl/dual2sbasic-ir3ch-triangle/)
-#### [舵機 | ServoMotor)](https://yesio.net/srl/dual2sbasic-servo/)
+#### [【感測】三通道循線 |IR3CH-line](https://yesio.net/srl/dual2sbasic-ir3ch-linefollowing/)
+#### [【感測】三通道循線 | IR3CH-相撲](https://yesio.net/srl/dual2sbasic-ir3ch-triangle/)
+#### [【制動】舵機 | ServoMotor)](https://yesio.net/srl/dual2sbasic-servo/)
 #### [【制動】 DC馬達 | Motor](https://yesio.net/srl/dual22-2s-dcmotor/)
-#### [電壓監測 (Power)](https://yesio.net/srl/dual2sbasic-power/)
+#### [【感測】電壓監測 (Power)](https://yesio.net/srl/dual2sbasic-power/)
 #### [【通訊】 無線搖桿 | PS3GamePad](https://yesio.net/srl/dual2sbasic-ps3/)
 
