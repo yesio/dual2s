@@ -1,6 +1,6 @@
 /*=====================================================================================
 yesio.net / 2026.03.12 / by nick
-# Filename：04_IR3CH.ino
+# Filename：04_IR3CH_inLine.ino
 # Function：紅外線循線邊界感測 (IR3CH 類別) 使用範例
   Test Code of dual2S's IR3CH CLASS.
 # Toolchain & Libs：ESP32 Arduino Core v3.3.5 (ESP-IDF v5.1), dual2s

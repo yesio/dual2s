@@ -119,16 +119,17 @@ class stateLED {
     
     // 初始化函式 (要在主程式 setup 中呼叫)
     void begin();
-    
-    // 基礎控制：設定單顆顏色或全亮
-    void setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b);
-    void fill(uint8_t r, uint8_t g, uint8_t b);
+	
+	void setBrightness(uint8_t brightness);
     void clear();
-    void setBrightness(uint8_t brightness);
-    
-    // 進階控制：一鍵切換機器人狀態燈效
+	
+    // 單顆控制：設定單顆顏色或全亮
+    void setPixel(uint16_t index, uint8_t r, uint8_t g, uint8_t b);
+	void setColor(uint16_t index, Color color);    
+	
+    // 一鍵切換機器人狀態燈效
     void fillColor(Color color);
-	void setColor(uint16_t index, Color color);
+	void fill(uint8_t r, uint8_t g, uint8_t b);	
 };
 
 /*--------------------------------------------------------*/

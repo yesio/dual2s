@@ -1,6 +1,6 @@
 /*=====================================================================================
 yesio.net / 2026.03.12 / by nick
-# Filename：dcMotors.ino
+# Filename：06_dcMotors.ino
 # Function：4通道直流(DC)馬達與GoSUMO車體運動之使用範例, 
   Examples of dual2S's application in 4 DC-Motors & GoSUMO motion control.
 # Toolchain & Libs：ESP32 Arduino Core v3.3.5 (ESP-IDF v5.1), dual2s

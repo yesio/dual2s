@@ -24,7 +24,7 @@ HCSR04 us_R(DUAL2S_HW::USC_R_ECHO, DUAL2S_HW::USC_R_TRIG); // 右方感測器
 unsigned long lastPrintTime = 0;
 int testStep = 0;
 
-// 設定攻擊觸發距離：當目標進入 20 公分內視為發現敵人
+// 設定攻擊觸發距離：當目標進入 20 公分內視為發現對手
 const uint8_t ATTACK_RANGE = 20; 
 
 void setup() {
@@ -89,7 +89,7 @@ void loop() {
       Serial.print("["); Serial.print(testStep); Serial.print("] ");
       Serial.printf("==> 【索敵狀態 %dcm】: ", ATTACK_RANGE);    
       
-      if (us_F.ObjSeeking(ATTACK_RANGE))      { Serial.print("🚨前方發現敵人！(準備衝撞)");  } 
+      if (us_F.ObjSeeking(ATTACK_RANGE))      { Serial.print("🚨前方發現對手！(準備衝撞)");  } 
 #ifndef DUAL2S_MINI       
       else if (us_L.ObjSeeking(ATTACK_RANGE)) { Serial.print("👈左側有目標！(準備左轉)");    }
       else if (us_R.ObjSeeking(ATTACK_RANGE)) { Serial.print("👉右側有目標！(準備右轉)");    }
