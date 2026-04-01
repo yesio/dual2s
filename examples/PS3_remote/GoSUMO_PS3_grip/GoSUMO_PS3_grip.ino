@@ -19,7 +19,7 @@ Motor m3(DUAL2S_HW::M3A, DUAL2S_HW::M3B);
 Motor m4(DUAL2S_HW::M4A, DUAL2S_HW::M4B);
 GoSUMO gs(&m1, &m2, &m3, &m4);
 Buzzer bz(DUAL2S_HW::BUZZER);            //建立物件 - Buzzer, GPIO 15
-WS2812B led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
+stateLED led(DUAL2S_HW::WSLED, 2);        //建立物件 - stateLED兩顆, GPIO 2
 Power pwr(DUAL2S_HW::BATTERY);           //建立物件 - dual2s控制器電壓偵測
 
 IR3CH ir(DUAL2S_HW::IR_L, DUAL2S_HW::IR_M, DUAL2S_HW::IR_R); //建立物件 - ir, 參數順序：左, 中, 右
@@ -57,7 +57,7 @@ void notify() {
 void onConnect() {
   //蜂鳴器指示 - 連線
   bz.alarm(800);
-  led.setStatus(WS2812B::CONNECTED);
+    led.fillColor(stateLED::BLUE);
   Serial.println("PS3 控制器已連接！");
 }
 
@@ -76,14 +76,14 @@ void setup() {
 
   Ps3.attach(notify);              // 註冊按鍵變更時的回呼函式
   Ps3.attachOnConnect(onConnect);  // 註冊成功連線時的回呼函式
-  Ps3.begin("20:00:00:00:90:00");  // 依據你的搖桿位址修改藍牙位址。
+  Ps3.begin("20:00:00:00:89:84");  // 依據你的搖桿位址修改藍牙位址。
 }
 
 void loop() {
 
   // 排程檢查區 ==========================================
-  // 檢查 PS3 連線狀態 - 超過2秒未更新PS3連線旗標則視為斷線,強制ESP32全機重啟,啟動重新連線。
-  if (PS3isConnectedSafe && (millis() - lastTime_PS3 > 2000)) { reconnectPS3();   }
+  // 檢查 PS3 連線狀態 - 超過2秒未收到訊號則重啟 (僅在已建立連線後生效)
+  if (Ps3.isConnected() && PS3isConnectedSafe && (millis() - lastTime_PS3 > 2000)) { reconnectPS3();   }
 
   // --- 原有的電池檢查邏輯 ---
   if (millis() - lastTime_Battery > 5000) {
@@ -91,7 +91,7 @@ void loop() {
     float currentVolt = pwr.read();
     Serial.println(currentVolt);
     if (currentVolt < 5.5){
-      if(!LOWPWR_Blink){ led.setStatus(WS2812B::LOWPWR); LOWPWR_Blink = true; }
+      if(!LOWPWR_Blink){ led.fillColor(stateLED::YELLOW); LOWPWR_Blink = true; }
       else{ led.clear(); LOWPWR_Blink = false;}
     }
   }
