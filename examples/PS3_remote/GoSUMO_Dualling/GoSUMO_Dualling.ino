@@ -20,7 +20,7 @@ Motor m3(DUAL2S_HW::M3A, DUAL2S_HW::M3B);
 Motor m4(DUAL2S_HW::M4A, DUAL2S_HW::M4B);
 GoSUMO gs(&m1, &m2, &m3, &m4);
 Buzzer bz(DUAL2S_HW::BUZZER);            //建立物件 - Buzzer, GPIO 15
-WS2812B led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
+stateLED led(DUAL2S_HW::WSLED, 2);       //建立物件 - stateLED兩顆, GPIO 2
 Power pwr(DUAL2S_HW::BATTERY);           //建立物件 - dual2s控制器電壓偵測
 
 IR3CH ir(DUAL2S_HW::IR_L, DUAL2S_HW::IR_M, DUAL2S_HW::IR_R); //建立物件 - ir, 參數順序：左(IR1), 中(IR2), 右(IR3)
@@ -77,7 +77,7 @@ void notify() {
 void onConnect() {
   //蜂鳴器指示 - 連線
   bz.alarm(800);
-  led.setStatus(WS2812B::CONNECTED);
+  led.fillColor(stateLED::BLUE);
   Serial.println("PS3 控制器已連接！");
 }
 
@@ -111,7 +111,7 @@ void loop() {
     float currentVolt = pwr.read();
     Serial.println(currentVolt);
     if (currentVolt < 5.5){
-      if(!LOWPWR_Blink){ led.setStatus(WS2812B::LOWPWR); LOWPWR_Blink = true; }
+      if(!LOWPWR_Blink){ led.fillColor(stateLED::YELLOW); LOWPWR_Blink = true; }
       else{ led.clear(); LOWPWR_Blink = false;}
     }
   }

@@ -8,20 +8,19 @@ yesio.net / 2026.03.01 / by nick
 #include "dual2s.h"
 
 Buzzer bz(DUAL2S_HW::BUZZER); //建立物件 - Buzzer, GPIO 15
-WS2812B led(DUAL2S_HW::WSLED, 2);            //建立物件 - ws2812b兩顆, GPIO 2
+stateLED led(DUAL2S_HW::WSLED, 2);           //建立物件 - stateLED兩顆, GPIO 2
 
 void setup() {
   led.begin();
 }
 
 void loop() {
-  led.begin();
-  led.setStatus(WS2812B::CONNECTED);
+  led.fillColor(stateLED::BLUE);
   bz.alarm(800);  // 聲響頻率800Hz持續200ms 
   
   delay(1000);    // 暫停 1 秒
   
-  led.setStatus(WS2812B::ERROR);
+  led.fillColor(stateLED::RED);
   bz.alarm(400);  // 聲響頻率400Hz持續200ms
   delay(1000);
   
