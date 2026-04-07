@@ -1,11 +1,12 @@
 /*=====================================================================================
-yesio.net / 2026.03.01 / by nick
+yesio.net / 2026.04.07 / by nick
 # Filename：GoSUMO_PS3.ino
 # Function：使用PS3搖桿控制GoSUMO運動之使用範例-【抓地胎模式】 / GoSUMO Grip motion control by PS3 remote.
   - 左右手控制：RIGHT_HAND_PS3
-  - 低電壓警示：鋰電池電壓低於6V時, 黃橘光5秒間隔閃爍。
+  - 低電壓警示：鋰電池電壓低於6V時, 黃光5秒間隔閃爍。
   - PS3斷線重新啟動連線：2秒檢查
   - 降速微動模式：右手模式下,常按不放L2鍵進入降速微動 (左手模式 = R2鍵)。
+  - 投石機功能：PS3搖桿【UP鍵】啟動機構動作。
 # Toolchain & Libs：ESP32 Arduino Core v3.3.5 (ESP-IDF v5.1), dual2s
 ======================================================================================*/
 #include <dual2s.h>
@@ -19,10 +20,11 @@ Motor m3(DUAL2S_HW::M3A, DUAL2S_HW::M3B);
 Motor m4(DUAL2S_HW::M4A, DUAL2S_HW::M4B);
 GoSUMO gs(&m1, &m2, &m3, &m4);
 Buzzer bz(DUAL2S_HW::BUZZER);            //建立物件 - Buzzer, GPIO 15
-WS2812B led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
+stateLED led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
 Power pwr(DUAL2S_HW::BATTERY);           //建立物件 - dual2s控制器電壓偵測
 
 IR3CH ir(DUAL2S_HW::IR_L, DUAL2S_HW::IR_M, DUAL2S_HW::IR_R); //建立物件 - ir, 參數順序：左, 中, 右
+ServoMotor s18(DUAL2S_HW::MG18);  //投石機
 
 unsigned long lastTime_Battery = 0;   // 紀錄最後一次收到搖桿訊號的時間
 unsigned long lastTime_PS3 = 0;   // 紀錄最後一次收到搖桿訊號的時間
@@ -32,9 +34,14 @@ bool LOWPWR_Blink = false;
 int  SpeedMAX = 1023;
 int  SpeedSLOW = 500;
 
+bool fDoCatapult = false; 
+
 void notify() {
   lastTime_PS3 = millis();      // 只要搖桿有動作，就更新時間
   PS3isConnectedSafe = true;    // 標記為有效連線
+  
+  if (Ps3.data.button.up)    fDoCatapult = true; //Serial.println("按下：上鍵");
+  //if (Ps3.data.button.down)  Serial.println("按下：下鍵");
 
 #ifdef RIGHT_HAND_PS3  
   int topSpeed = Ps3.data.button.l2 ? SpeedSLOW : SpeedMAX;
@@ -57,7 +64,6 @@ void notify() {
 void onConnect() {
   //蜂鳴器指示 - 連線
   bz.alarm(800);
-  led.setStatus(WS2812B::CONNECTED);
   Serial.println("PS3 控制器已連接！");
 }
 
@@ -70,6 +76,8 @@ void reconnectPS3() {
 void setup() {
   Serial.begin(115200);
   led.begin();
+
+  s18.begin(0, 180, 180); //投石機
 
   //蜂鳴器指示 - 系統啟動
   bz.alarm(600);
@@ -91,11 +99,20 @@ void loop() {
     float currentVolt = pwr.read();
     Serial.println(currentVolt);
     if (currentVolt < 5.5){
-      if(!LOWPWR_Blink){ led.setStatus(WS2812B::LOWPWR); LOWPWR_Blink = true; }
+      if(!LOWPWR_Blink){ led.fillColor(stateLED::YELLOW); LOWPWR_Blink = true; }
       else{ led.clear(); LOWPWR_Blink = false;}
     }
   }
 
+  if(fDoCatapult){ Catapult(); } //呼叫投石機
+
   // ==========================================
 
 } //End_of_LOOP
+
+void Catapult(){
+  fDoCatapult = false;
+  s18.write(0);  // 設定目標角度
+  delay(1000);    // 等待 1 秒讓舵機轉到位  
+  s18.write(170);
+}
