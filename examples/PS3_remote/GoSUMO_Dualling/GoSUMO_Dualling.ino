@@ -1,5 +1,5 @@
 /*=====================================================================================
-yesio.net / 2026.03.01 / by nick
+yesio.net / 2026.04.08 by Adrian
 # Filename：GoSUMO_Dualling.ino
 # Function：使用PS3搖桿控制GoSUMO運動之使用範例-【抓地胎模式】 / GoSUMO Grip motion control by PS3 remote.
   - 左右手控制：RIGHT_HAND_PS3
