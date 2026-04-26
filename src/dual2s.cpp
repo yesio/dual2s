@@ -325,80 +325,78 @@ uint16_t IR3CH::getValR() { return analogRead(_pin_R); }
 /*--------------------------------------------------------*/
 // 將外部傳入的指標，綁定到內部的變數
 GoSUMO::GoSUMO(Motor* m1, Motor* m2, Motor* m3, Motor* m4) {
-  _m1 = m1;
-  _m2 = m2;
-  _m3 = m3;
-  _m4 = m4;
+  _mLF = m1;   _mRF = m3;
+  _mLB = m2;   _mRB = m4;
 }
 
 void GoSUMO::act(Motion motion, uint16_t speed) {
   switch (motion) {
     case FORWARD:
-      _m1->act(Motor::CCW, speed); _m3->act(Motor::CCW, speed);
-      _m2->act(Motor::CW, speed);  _m4->act(Motor::CW, speed);
+      _mLF->act(Motor::CCW, speed);  _mRF->act(Motor::CW, speed);
+      _mLB->act(Motor::CCW, speed);  _mRB->act(Motor::CW, speed);
       break;
     case BACKWARD:
-      _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
-      _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
+      _mLF->act(Motor::CW, speed);  _mRF->act(Motor::CCW, speed);
+      _mLB->act(Motor::CW, speed);  _mRB->act(Motor::CCW, speed);
       break;
     case TURN_LEFT:
-      _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
-      _m2->act(Motor::CW, speed);  _m4->act(Motor::CW, speed);
+      _mLF->act(Motor::CW, speed);  _mRF->act(Motor::CW, speed);
+      _mLB->act(Motor::CW, speed);  _mRB->act(Motor::CW, speed);
       break;
     case TURN_RIGHT:
-      _m1->act(Motor::CCW, speed); _m3->act(Motor::CCW, speed);
-      _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
+      _mLF->act(Motor::CCW, speed); _mRF->act(Motor::CCW, speed);
+      _mLB->act(Motor::CCW, speed); _mRB->act(Motor::CCW, speed);
       break;
     case STRAFE_RIGHT: // 右橫移
-      _m1->act(Motor::CW, speed);  _m3->act(Motor::CCW, speed);
-      _m2->act(Motor::CW, speed);  _m4->act(Motor::CCW, speed);
+      _mLF->act(Motor::CCW, speed); _mRF->act(Motor::CCW, speed);
+      _mLB->act(Motor::CW, speed);  _mRB->act(Motor::CW, speed);
       break;
     case STRAFE_LEFT: // 左橫移
-      _m1->act(Motor::CCW, speed); _m3->act(Motor::CW, speed);
-      _m2->act(Motor::CCW, speed); _m4->act(Motor::CW, speed);
-      break;  
+      _mLF->act(Motor::CW, speed);  _mRF->act(Motor::CW, speed);
+      _mLB->act(Motor::CCW, speed); _mRB->act(Motor::CCW, speed);
+      break;   
     case DIAG_FR:  // 前右斜向 (Forward-Right, 原 RF_TVL)
-      _m1->stop();                 _m3->act(Motor::CCW, speed);
-      _m2->act(Motor::CW, speed);  _m4->stop();
+	  _mLF->act(Motor::CCW, speed); _mRF->stop();
+	  _mLB->stop();                 _mRB->act(Motor::CW, speed);
       break;
     case DIAG_BR:  // 後右斜向 (Backward-Right, 原 RB_TVL)
-      _m1->act(Motor::CW, speed);  _m3->stop();
-      _m2->stop();                 _m4->act(Motor::CCW, speed);
+      _mLF->stop();                     _mRF->act(Motor::CCW, speed);
+      _mLB->act(Motor::CW, speed);      _mRB->stop();
       break;
     case DIAG_FL:  // 前左斜向 (Forward-Left, 原 LF_TVL)
-      _m1->act(Motor::CCW, speed); _m3->stop();
-      _m2->stop();                 _m4->act(Motor::CW, speed);
+      _mLF->stop();                    _mRF->act(Motor::CW, speed);
+      _mLB->act(Motor::CCW, speed);    _mRB->stop();
       break;
-    case DIAG_BL:  // 後左斜向 (Backward-Left, 原 LB_TVL)
-      _m1->stop();                 _m3->act(Motor::CW, speed);
-      _m2->act(Motor::CCW, speed); _m4->stop();
+    case DIAG_BL:  // 後左斜向 (Backward-Left, 原 LB_TVL) //nick
+      _mLF->act(Motor::CW, speed);     _mRF->stop();
+      _mLB->stop();                    _mRB->act(Motor::CCW, speed);
       break;
   }
 }
 
 void GoSUMO::stop() {
-  _m1->stop();
-  _m2->stop();
-  _m3->stop();
-  _m4->stop();
+  _mLF->stop();
+  _mLB->stop();
+  _mRF->stop();
+  _mRB->stop();
 }
 
 void GoSUMO::linetracking(Motion motion, uint16_t speed, uint16_t wheel_difference) {
   if (motion == FORWARD) {
-    _m1->act(Motor::CCW, speed); _m3->act(Motor::CCW, speed);
-    _m2->act(Motor::CW, speed);  _m4->act(Motor::CW, speed);
+    _mLF->act(Motor::CCW, speed); _mRF->act(Motor::CCW, speed);
+    _mLB->act(Motor::CW, speed);  _mRB->act(Motor::CW, speed);
   }
   else if (motion == BACKWARD) {
-    _m1->act(Motor::CW, speed);  _m3->act(Motor::CW, speed);
-    _m2->act(Motor::CCW, speed); _m4->act(Motor::CCW, speed);
+    _mLF->act(Motor::CW, speed);  _mRF->act(Motor::CW, speed);
+    _mLB->act(Motor::CCW, speed); _mRB->act(Motor::CCW, speed);
   }
   else if (motion == TURN_LEFT) {
-    _m1->act(Motor::CCW, speed - wheel_difference); _m3->act(Motor::CCW, speed - wheel_difference);
-    _m2->act(Motor::CW, speed);                     _m4->act(Motor::CW, speed);
+    _mLF->act(Motor::CCW, speed - wheel_difference); _mRF->act(Motor::CCW, speed - wheel_difference);
+    _mLB->act(Motor::CW, speed);                     _mRB->act(Motor::CW, speed);
   }
   else if (motion == TURN_RIGHT) {
-    _m1->act(Motor::CCW, speed);                    _m3->act(Motor::CCW, speed);
-    _m2->act(Motor::CW, speed - wheel_difference);  _m4->act(Motor::CW, speed - wheel_difference);
+    _mLF->act(Motor::CCW, speed);                    _mRF->act(Motor::CCW, speed);
+    _mLB->act(Motor::CW, speed - wheel_difference);  _mRB->act(Motor::CW, speed - wheel_difference);
   }
 }
 

@@ -1,5 +1,5 @@
 /*=====================================================================================
-yesio.net / 2026.04.07 / by nick
+yesio.net / 2026.04.26 / by nick
 # Filename：GoSUMO_PS3.ino
 # Function：使用PS3搖桿控制GoSUMO運動之使用範例-【抓地胎模式】 / GoSUMO Grip motion control by PS3 remote.
   - 左右手控制：RIGHT_HAND_PS3
@@ -14,11 +14,12 @@ yesio.net / 2026.04.07 / by nick
 //PS3搖桿預設右手控制, 註解即可換為左手控制
 #define RIGHT_HAND_PS3
 
-Motor m1(DUAL2S_HW::M1A, DUAL2S_HW::M1B);
-Motor m2(DUAL2S_HW::M2A, DUAL2S_HW::M2B);
-Motor m3(DUAL2S_HW::M3A, DUAL2S_HW::M3B);
-Motor m4(DUAL2S_HW::M4A, DUAL2S_HW::M4B);
-GoSUMO gs(&m1, &m2, &m3, &m4);
+Motor m1(14, 32); 
+Motor m2(12, 33);
+Motor m3(25, 26); 
+Motor m4(23, 22);  //dual2s-mini 23, 27
+GoSUMO gs(&m3, &m1, &m4, &m2); //左前, 左後, 右前, 右後 -- GoSUMO
+
 Buzzer bz(DUAL2S_HW::BUZZER);            //建立物件 - Buzzer, GPIO 15
 stateLED led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
 Power pwr(DUAL2S_HW::BATTERY);           //建立物件 - dual2s控制器電壓偵測

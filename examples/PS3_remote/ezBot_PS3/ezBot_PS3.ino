@@ -1,12 +1,12 @@
 /*=====================================================================================
-yesio.net / 2026.03.01 / by nick
-# Filename：GoSUMO_Dualling.ino
-# Function：使用PS3搖桿控制GoSUMO運動之使用範例-【抓地胎模式】 / GoSUMO Grip motion control by PS3 remote.
+yesio.net / 2026.04.26 / by nick
+# Filename：ezBot_PS3.ino
+# Function：使用PS3搖桿控制ezBot運動之使用範例-【麥克納姆倫模式】 / ezBot omni-motion control by PS3 remote.
   - 左右手控制：RIGHT_HAND_PS3
-  - 低電壓警示：鋰電池電壓低於6V時, 黃橘光5秒間隔閃爍。
+  - 低電壓警示：鋰電池電壓低於6V時, 黃光5秒間隔閃爍。
   - PS3斷線重新啟動連線：2秒檢查
   - 降速微動模式：右手模式下,常按不放L2鍵進入降速微動 (左手模式 = R2鍵)。
-  - 啟動/結束對戰模式：PS3 - 【L1按鍵】啟動、【R1按鍵】結束
+  - 投石機功能：PS3搖桿【UP鍵】啟動機構動作。
 # Toolchain & Libs：ESP32 Arduino Core v3.3.5 (ESP-IDF v5.1), dual2s
 ======================================================================================*/
 #include <dual2s.h>
@@ -14,50 +14,37 @@ yesio.net / 2026.03.01 / by nick
 //PS3搖桿預設右手控制, 註解即可換為左手控制
 #define RIGHT_HAND_PS3
 
-Motor m1(DUAL2S_HW::M1A, DUAL2S_HW::M1B);
-Motor m2(DUAL2S_HW::M2A, DUAL2S_HW::M2B);
-Motor m3(DUAL2S_HW::M3A, DUAL2S_HW::M3B);
-Motor m4(DUAL2S_HW::M4A, DUAL2S_HW::M4B);
-GoSUMO gs(&m1, &m2, &m3, &m4);
+Motor m1(14, 32); 
+Motor m2(12, 33);
+Motor m3(25, 26); 
+Motor m4(23, 27);  //dual2s-mini 27, 23
+GoSUMO gs(&m2, &m1, &m4, &m3); //左前, 左後, 右前, 右後 -- ezBot
+
 Buzzer bz(DUAL2S_HW::BUZZER);            //建立物件 - Buzzer, GPIO 15
 stateLED led(DUAL2S_HW::WSLED, 2);        //建立物件 - ws2812b兩顆, GPIO 2
 Power pwr(DUAL2S_HW::BATTERY);           //建立物件 - dual2s控制器電壓偵測
 
-IR3CH ir(DUAL2S_HW::IR_L, DUAL2S_HW::IR_M, DUAL2S_HW::IR_R); //建立物件 - ir, 參數順序：左(IR1), 中(IR2), 右(IR3)
+IR3CH ir(DUAL2S_HW::IR_L, DUAL2S_HW::IR_M, DUAL2S_HW::IR_R); //建立物件 - ir, 參數順序：左, 中, 右
+ServoMotor s18(DUAL2S_HW::MG18);  //投石機
 
-// =================【逃脫狀態機變數】=================
-bool isEvading = false;        // 是否正在執行逃脫動作
-byte currentEvadeState = 0;    // 觸發逃脫時的 IR 狀態 (1~7)
-int evadePhase = 0;            // 逃脫連續技的階段 (1: 旋轉/後退, 2: 往前脫離)
-unsigned long evadeTimer = 0;  // 逃脫動作的計時器
-
-// 逃脫參數設定 (依照你的馬達轉速調整毫秒數)
-const int TURN_TIME = 150;     // 「小旋轉」的時間
-const int FORWARD_TIME = 200;  // 「前進小距離」的時間
-const int ESCAPE_SPEED = 1023; // 逃脫時的生死時速
-
-
-//時間戳記
 unsigned long lastTime_Battery = 0;   // 紀錄最後一次收到搖桿訊號的時間
 unsigned long lastTime_PS3 = 0;   // 紀錄最後一次收到搖桿訊號的時間
-
 bool PS3isConnectedSafe = false;    // 自定義的安全連線狀態
 
 bool LOWPWR_Blink = false;
 int  SpeedMAX = 1023;
 int  SpeedSLOW = 500;
 
-bool fGoDUALLING = false;
+bool fDoCatapult = false; 
 
 void notify() {
-  lastTime_PS3 = millis();      // 只要搖桿有動作，就更新時間
+  lastTime_PS3 = millis();      // 只要搖桿有動作，就更新時間 
   PS3isConnectedSafe = true;    // 標記為有效連線
   
-  if (Ps3.data.button.l1){ fGoDUALLING = true;   Serial.println("GoDualling");}    //上鍵:手臂抬起
-  if (Ps3.data.button.r1){ fGoDUALLING = false; Serial.println("STOP GoDualling"); }  //下鍵:手臂放下
+  if (Ps3.data.button.up)    fDoCatapult = true; // 觸發投石機
 
 #ifdef RIGHT_HAND_PS3  
-  int topSpeed = Ps3.data.button.l2 ? SpeedSLOW : SpeedMAX;
+  int topSpeed = Ps3.data.button.l2 ? SpeedSLOW : SpeedMAX; // 減速模式 
   int stick_y = Ps3.data.analog.stick.ry;
   int stick_x = Ps3.data.analog.stick.rx;
 #else
@@ -66,12 +53,50 @@ void notify() {
   int stick_x = Ps3.data.analog.stick.lx;
 #endif  
 
-  if(stick_y <= -10 && abs(stick_x) < 10) gs.act(GoSUMO::FORWARD, map(stick_y, -10, -128, 150, topSpeed));
-  else if(stick_y >= 10 && abs(stick_x) < 10) gs.act(GoSUMO::BACKWARD, map(stick_y, 10, 127, 150, topSpeed));
-  else if(stick_x >= 10 && abs(stick_y) < 10) gs.act(GoSUMO::TURN_RIGHT, map(stick_x, 10, 127, 150, topSpeed));
-  else if(stick_x <= -10 && abs(stick_y) < 10) gs.act(GoSUMO::TURN_LEFT, map(stick_x, -10, -128, 150, topSpeed));
-  else gs.stop();
+  if (Ps3.data.button.circle){ gs.act(GoSUMO::TURN_RIGHT, topSpeed); delay(20);  gs.stop();}
+  if (Ps3.data.button.square){ gs.act(GoSUMO::TURN_LEFT, topSpeed); delay(20); gs.stop();}
 
+  int threshold = 30; // 判定死區，確保 8 方向切換穩定 
+  int spd = map(max(abs(stick_x), abs(stick_y)), threshold, 128, 150, topSpeed); // 速度映射 
+
+  // --- 使用 class GoSUMO 麥克納姆輪控制方法 ---
+  
+  // 1. 前進 (Forward)
+  if (stick_y < -threshold && abs(stick_x) < threshold) {
+    gs.act(GoSUMO::FORWARD, spd);
+  }
+  // 2. 後退 (Backward)
+  else if (stick_y > threshold && abs(stick_x) < threshold) {
+    gs.act(GoSUMO::BACKWARD, spd);
+  }
+  // 3. 左橫移 (Strafe Left)
+  else if (stick_x < -threshold && abs(stick_y) < threshold) {
+    gs.act(GoSUMO::STRAFE_LEFT, spd);
+  }
+  // 4. 右橫移 (Strafe Right)
+  else if (stick_x > threshold && abs(stick_y) < threshold) {
+    gs.act(GoSUMO::STRAFE_RIGHT, spd);
+  }
+  // 5. 左前斜向 (North-West)
+  else if (stick_y < -threshold && stick_x < -threshold) {
+    gs.act(GoSUMO::DIAG_FL, spd);
+  }
+  // 6. 右前斜向 (North-East)
+  else if (stick_y < -threshold && stick_x > threshold) {
+    gs.act(GoSUMO::DIAG_FR, spd);
+  }
+  // 7. 左後斜向 (South-West)
+  else if (stick_y > threshold && stick_x < -threshold) {
+    gs.act(GoSUMO::DIAG_BL, spd);
+  }
+  // 8. 右後斜向 (South-East)
+  else if (stick_y > threshold && stick_x > threshold) {
+    gs.act(GoSUMO::DIAG_BR, spd);
+  }
+  // 停止
+  else {
+    gs.stop(); 
+  }
 }
 
 void onConnect() {
@@ -89,6 +114,8 @@ void reconnectPS3() {
 void setup() {
   Serial.begin(115200);
   led.begin();
+
+  s18.begin(0, 180, 180); //投石機
 
   //蜂鳴器指示 - 系統啟動
   bz.alarm(600);
@@ -115,16 +142,15 @@ void loop() {
     }
   }
 
+  if(fDoCatapult){ Catapult(); } //呼叫投石機
+
   // ==========================================
-  if(!fGoDUALLING) return;
-
-  // 1. ================= 【背景感測器更新區】 =================
-  //bz.update();
-  //us_F.update(); 
-  ir.update(2000, IR3CH::BLACK_LINE, false); 
-  // ... 其他 update ...
-
-  // 2. ================= 【最高優先級：邊界逃脫機制】 =================
-  byte irState = ir.getState();
 
 } //End_of_LOOP
+
+void Catapult(){
+  fDoCatapult = false;
+  s18.write(0);  // 設定目標角度
+  delay(1000);    // 等待 1 秒讓舵機轉到位  
+  s18.write(170);
+}

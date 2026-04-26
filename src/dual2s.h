@@ -218,10 +218,10 @@ class Motor {
 class GoSUMO {
   private:
     // 宣告四個馬達的指標，用來接收外部傳入的實體馬達
-    Motor* _m1;
-    Motor* _m2;
-    Motor* _m3;
-    Motor* _m4;
+    Motor* _mLF;
+    Motor* _mLB;
+    Motor* _mRF;
+    Motor* _mRB;
 
   public:
     typedef enum {
